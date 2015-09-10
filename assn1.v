@@ -37,6 +37,53 @@ module rca8(
 endmodule
 
 
+module mux2(
+    input [7:0] a, b,
+    input sw,
+    output [7:0] out);
+    
+    // maybe we should change this later
+    assign out = (sw) ? a : b;
+endmodule
+    
+
+module alu(
+    input [7:0] a, b,
+    input [3:0] alu_op, // k i j c_in
+    output c_out, z, v, n,
+    output [7:0] r); 
+
+    wire [7:0] b_alt, s, and_out, or_out, and_or_out, xor_out, logic_out;
+
+    
+
+    assign b_alt[0] = (b[0] ~& alu_op[2]) ^ ~alu_op[1];
+    assign b_alt[1] = (b[1] ~& alu_op[2]) ^ ~alu_op[1];
+    assign b_alt[2] = (b[2] ~& alu_op[2]) ^ ~alu_op[1];
+    assign b_alt[3] = (b[3] ~& alu_op[2]) ^ ~alu_op[1];
+    assign b_alt[4] = (b[4] ~& alu_op[2]) ^ ~alu_op[1];
+    assign b_alt[5] = (b[5] ~& alu_op[2]) ^ ~alu_op[1];
+    assign b_alt[6] = (b[6] ~& alu_op[2]) ^ ~alu_op[1];
+    assign b_alt[7] = (b[7] ~& alu_op[2]) ^ ~alu_op[1];
+    
+    rca8 adder(a, b_alt, alu_op[0], s, c_out);
+
+    assign and_out = a & b;
+    assign or_out = a | b;
+    assign xor_out = a ^ b;
+
+    mux2 mux2_and_or(and_out, or_out, alu_op[2], and_or_out),
+    mux2_logic_out(and_or_out, xor_out, alu_op[1], logic_out),
+    mux2_r(logic_out, s, alu_op[3], r);
+
+    // flags
+    assign z = ~s[7] & ~s[6] & ~s[5] & ~s[4] & ~s[3] & ~s[2] & ~s[1] & ~s[0];
+    assign v = (a[7] & b[7] & ~s[7]) | (~a[7] & ~b[7] & s[7]);
+    assign n = s[7];
+
+
+endmodule
+
 
 module adder_tb;
 
