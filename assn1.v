@@ -20,7 +20,8 @@ endmodule
 module rca8(
     input [7:0] a, b,
     input c_0,
-    output [8:0] s);
+    output [7:0] s,
+    output c_out);
 
     wire c_1, c_2, c_3, c_4, c_5, c_6, c_7;
 
@@ -31,7 +32,7 @@ module rca8(
     FA4(a[4], b[4], c_4, s[4], c_5),
     FA5(a[5], b[5], c_5, s[5], c_6),
     FA6(a[6], b[6], c_6, s[6], c_7),
-    FA7(a[7], b[7], c_7, s[7], s[8]);
+    FA7(a[7], b[7], c_7, s[7], c_out);
 
 endmodule
 
