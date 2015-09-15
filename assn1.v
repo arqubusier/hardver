@@ -55,16 +55,14 @@ module alu(
 
     wire [7:0] b_alt, s, and_out, or_out, and_or_out, xor_out, logic_out;
 
-    
-
-    assign b_alt[0] = (b[0] ~& alu_op[2]) ^ ~alu_op[1];
-    assign b_alt[1] = (b[1] ~& alu_op[2]) ^ ~alu_op[1];
-    assign b_alt[2] = (b[2] ~& alu_op[2]) ^ ~alu_op[1];
-    assign b_alt[3] = (b[3] ~& alu_op[2]) ^ ~alu_op[1];
-    assign b_alt[4] = (b[4] ~& alu_op[2]) ^ ~alu_op[1];
-    assign b_alt[5] = (b[5] ~& alu_op[2]) ^ ~alu_op[1];
-    assign b_alt[6] = (b[6] ~& alu_op[2]) ^ ~alu_op[1];
-    assign b_alt[7] = (b[7] ~& alu_op[2]) ^ ~alu_op[1];
+    assign b_alt[0] = ~(b[0] & alu_op[2]) ^ ~alu_op[1]; //(b[0] ~& alu_op[2]) ^ ~alu_op[1]; <- it does'nt work in acl2!!
+    assign b_alt[1] = ~(b[1] & alu_op[2]) ^ ~alu_op[1];
+    assign b_alt[2] = ~(b[2] & alu_op[2]) ^ ~alu_op[1];
+    assign b_alt[3] = ~(b[3] & alu_op[2]) ^ ~alu_op[1];
+    assign b_alt[4] = ~(b[4] & alu_op[2]) ^ ~alu_op[1];
+    assign b_alt[5] = ~(b[5] & alu_op[2]) ^ ~alu_op[1];
+    assign b_alt[6] = ~(b[6] & alu_op[2]) ^ ~alu_op[1];
+    assign b_alt[7] = ~(b[7] & alu_op[2]) ^ ~alu_op[1];
     
     rca8 adder(a, b_alt, alu_op[0], s, c_out);
 
