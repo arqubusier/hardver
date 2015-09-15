@@ -25,7 +25,7 @@ module rca8(
 
     wire c_1, c_2, c_3, c_4, c_5, c_6, c_7;
 
-    full_adder FA0(a[0], b[0], c_0, s[0], c1),
+    full_adder FA0(a[0], b[0], c_0, s[0], c_1),
     FA1(a[1], b[1], c_1, s[1], c_2),
     FA2(a[2], b[2], c_2, s[2], c_3),
     FA3(a[3], b[3], c_3, s[3], c_4),
@@ -43,7 +43,7 @@ module mux2(
     output [7:0] out);
     
     // maybe we should change this later
-    assign out = (sw) ? a : b;
+    assign out = (sw) ? b : a;
 endmodule
     
 
