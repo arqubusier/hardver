@@ -140,18 +140,26 @@
           :opcode *op-plus*
           :spec (mod (+ a b) (expt 2 8)))
 
-(alu8-thm another-proof-a
-          :opcode *op-a*
-          :spec a)
+(alu8-thm proof-plus-plus-one
+          :opcode *op-plus-plus-one*
+          :spec (mod (+ a b 1) (expt 2 8)))
 
-(alu8-thm another-proof-a
-          :opcode *op-a*
-          :spec a)
+(alu8-thm proof-plus-not
+          :opcode *op-plus-not*
+          :spec (mod (+ a (lognot b)) (expt 2 8)))
 
-(alu8-thm another-proof-a
-          :opcode *op-a*
-          :spec a)
+(alu8-thm proof-minus
+          :opcode *op-minus*
+          :spec (mod (- a b) (expt 2 8)))
 
-(alu8-thm another-proof-a
-          :opcode *op-a*
-          :spec a)
+(alu8-thm proof-bitand
+          :opcode *op-bitand*
+          :spec (logand a b))
+
+(alu8-thm proof-bitxor
+          :opcode *op-bitxor*
+          :spec (logxor a b))
+
+(alu8-thm proof-bitor
+          :opcode *op-bitor*
+          :spec (logior a b))
