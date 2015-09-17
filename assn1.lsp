@@ -52,3 +52,40 @@
          '((a . 9)
            (b . 5)
            (op . 12)))
+
+
+; EXERCISE 5
+
+; prove of operation 'a'
+(def-gl-thm alu3-proof-a
+  :hyp (and (unsigned-byte-p 8 a)
+            (unsigned-byte-p 8 b)
+            (unsigned-byte-p 4 op)
+            (equal op 8))
+
+  :concl (let* ((in-alist (list (cons 'a a)
+                                (cons 'b b)
+                                (cons 'op op)))
+                (out-alist (stv-run (test-vector3) in-alist))
+                (res       (cdr (assoc 'res out-alist))))
+           (equal res a))
+  :g-bindings (gl::auto-bindings (:nat a 8)
+                                 (:nat b 8)
+                                 (:nat op 4)))
+
+; prove of operation 'a+b'
+(def-gl-thm alu3-proof-a-plus-b
+  :hyp (and (unsigned-byte-p 8 a)
+            (unsigned-byte-p 8 b)
+            (unsigned-byte-p 4 op)
+            (equal op 12))
+
+  :concl (let* ((in-alist (list (cons 'a a)
+                                (cons 'b b)
+                                (cons 'op op)))
+                (out-alist (stv-run (test-vector3) in-alist))
+                (res       (cdr (assoc 'res out-alist))))
+           (equal res (mod (+ a b) (expt 2 8))))
+  :g-bindings (gl::auto-bindings (:nat a 8)
+                                 (:nat b 8)
+                                 (:nat op 4)))
