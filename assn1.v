@@ -47,38 +47,42 @@ module mux2(
 endmodule
     
 
-module alu(
+module alu8(
     input [7:0] a, b,
-    input [3:0] alu_op, // k i j c_in
-    output c_out, z, v, n,
-    output [7:0] r); 
+    input [3:0] op, // k i j c_in
+    output [3:0] flg; // c_out, z, v, n,
+    output [7:0] res); 
 
     wire [7:0] b_alt, s, and_out, or_out, and_or_out, xor_out, logic_out;
 
-    assign b_alt[0] = ~(b[0] & alu_op[2]) ^ ~alu_op[1]; //(b[0] ~& alu_op[2]) ^ ~alu_op[1]; <- it does'nt work in acl2!!
-    assign b_alt[1] = ~(b[1] & alu_op[2]) ^ ~alu_op[1];
-    assign b_alt[2] = ~(b[2] & alu_op[2]) ^ ~alu_op[1];
-    assign b_alt[3] = ~(b[3] & alu_op[2]) ^ ~alu_op[1];
-    assign b_alt[4] = ~(b[4] & alu_op[2]) ^ ~alu_op[1];
-    assign b_alt[5] = ~(b[5] & alu_op[2]) ^ ~alu_op[1];
-    assign b_alt[6] = ~(b[6] & alu_op[2]) ^ ~alu_op[1];
-    assign b_alt[7] = ~(b[7] & alu_op[2]) ^ ~alu_op[1];
+    assign b_alt[0] = ~(b[0] & op[2]) ^ ~op[1]; //(b[0] ~& op[2]) ^ ~op[1]; <- it does'nt work in acl2!!
+    assign b_alt[1] = ~(b[1] & op[2]) ^ ~op[1];
+    assign b_alt[2] = ~(b[2] & op[2]) ^ ~op[1];
+    assign b_alt[3] = ~(b[3] & op[2]) ^ ~op[1];
+    assign b_alt[4] = ~(b[4] & op[2]) ^ ~op[1];
+    assign b_alt[5] = ~(b[5] & op[2]) ^ ~op[1];
+    assign b_alt[6] = ~(b[6] & op[2]) ^ ~op[1];
+    assign b_alt[7] = ~(b[7] & op[2]) ^ ~op[1];
     
-    rca8 adder(a, b_alt, alu_op[0], s, c_out);
+    rca8 adder(a, b_alt, op[0], s, c_out);
 
     assign and_out = a & b;
     assign or_out = a | b;
     assign xor_out = a ^ b;
 
-    mux2 mux2_and_or(and_out, or_out, alu_op[2], and_or_out),
-    mux2_logic_out(and_or_out, xor_out, alu_op[1], logic_out),
-    mux2_r(logic_out, s, alu_op[3], r);
+    mux2 mux2_and_or(and_out, or_out, op[2], and_or_out),
+    mux2_logic_out(and_or_out, xor_out, op[1], logic_out),
+    mux2_r(logic_out, s, op[3], res);
 
     // flags
     assign z = ~s[7] & ~s[6] & ~s[5] & ~s[4] & ~s[3] & ~s[2] & ~s[1] & ~s[0];
     assign v = (a[7] & b[7] & ~s[7]) | (~a[7] & ~b[7] & s[7]);
     assign n = s[7];
 
+    assign flg[0] = n;
+    assign flg[1] = v;
+    assign flg[2] = z;
+    assign flg[3] = c_out;
 
 endmodule
 
