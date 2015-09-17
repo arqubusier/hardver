@@ -42,9 +42,50 @@
 ;; reading Verilog and extracting modules
 (defmodules *translation*
   (vl2014::make-vl-loadconfig
-   :start-files (list "core8_template.v")))
+   :start-files (list "core8.v")))
 
 
 ;; ----------------- END TEMPLATE----------------------------------------
 
+; lookup the simplified version of "alu"
+(defconst *ex8-vl*
+  (vl2014::vl-find-module "ex8"
+                          (vl2014::vl-design->mods
+                           (vl2014::vl-translation->good *translation*))))
 
+; extract the E module
+(defconst *ex8*
+  (vl2014::vl-module->esim *ex8-vl*))
+
+; Symbolic Test Vector for ex8 module
+(defstv test-vector-ex8
+  :mod *ex8*
+
+  ;; phases:  0     1     2    3
+  
+  :inputs
+  '(("clk"    0     ~ )
+    ("rst"    1     1     0)
+    ("ir"     ir )
+    ("abusin" ain)
+    ("bbusin" bin)
+    ("flg"    flg))
+
+  :outputs
+  '(("abus"   _     _     _     aout)
+    ("bbus"   _     _     _     bout)
+    ("alu"    _     _     _     op_alu)
+    ("clrf"   _     _     _     clrf)
+    ("irie"   _     irie1 _     irie2)
+    ("raoe"   _     raoe1 _     raoe2)
+    ("rboe"   _     rboe1 _     rboe2)
+    ("sel"    _     sel1  _     sel2)
+    ("sie"    _     sie1  _     sie2)
+    ("rb"     _     _     _     rb))
+  )
+
+(stv-debug (test-vector-ex8)
+           `((ir   . #b0001110000110010)
+             (ain  . 9)
+             (bin  . 3)
+             (flg  . #b1000)))

@@ -3,6 +3,12 @@
 
 `include "assn1.v"
 
+`define ADC  4'b0001
+`define ADD  4'b0000
+`define AND  4'b0010
+`define ANDI 4'b0111
+`define LDI  4'b1110
+
 module core8 (clk,rst,inst);
 input clk;
 input rst; // reset is active high
@@ -134,48 +140,22 @@ always @(posedge clk)
 
 // Decoding the instruction
 
-if (xst == 2'b0)
-    begin
-        assign irie = 1'b1;
-        assign sie = 1'b0;
-        assign sel = 1'b0;
-	assign raoe = 1'b0;
-	assign rboe = 1'b0;
-    end
-else
-    begin
-        assign irie = 1'b0;
-        assign sie = 1'b1;
-        assign sel = 1'b1;
+assign irie = (xst == 2'b00) ? 1'b1 : 1'b0;
+assign sie =  (xst == 2'b00) ? 1'b0 : 1'b1;
+assign sel =  (xst == 2'b00) ? 1'b0 : 1'b1;
+assign raoe = (xst == 2'b00) ? 1'b0 : 1'b1;
+assign rboe = (xst == 2'b00) ? 1'b0 : 1'b1;
 
-	assign abus = abusin;
-	assign raoe = 1'b1;
+assign abus = abusin;
 
-        case (ir[14])
-	    1'b0: 	// instruction format 1: 2 register
-		begin
-		    
+assign rb = ir[3:0];
+assign bbus = ir[14] ? {ir[11:8], ir[3:0]} : bbusin;
 
-		    assign rboe = 1'b1;
-		    assign rb = ir[3:0];
-		    assign bbus = bbusin;
+assign alu = 
+    (ir[15:12] == `ADC) ? (flg[0] ? 4'b1100 : 4'b1101) : 4'bx;
 
-	            case (ir[15:10])
-		        6'b000111: // ADC
-                            begin
-				if (flg[0])
-			            assign alu = 4'b1100;
-				else
-				    assign alu = 4'b1101;
-				assign clrf = 4'b1111;
-		   	    end
-                    endcase
-		end
-		
-	    //1'b1:	// instruction format 2: 1 register + 1 value in the instruction
-		
-        endcase
-    end
+assign clrf = 4'b1111;
+
 
 
 // alu

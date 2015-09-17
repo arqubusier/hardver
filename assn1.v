@@ -50,7 +50,7 @@ endmodule
 module alu8(
     input [7:0] a, b,
     input [3:0] op, // k i j c_in
-    output [3:0] flg; // c_out, z, v, n,
+    output [3:0] flg, // c_out, z, v, n,
     output [7:0] res); 
 
     wire [7:0] b_alt, s, and_out, or_out, and_or_out, xor_out, logic_out;
