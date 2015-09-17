@@ -41,17 +41,28 @@
     ("n" n)
     ("r" res)))
 
+(defconst *op-a*             8)
+(defconst *op-plus-one*      9)
+(defconst *op-minus-one*     10)
+(defconst *op-plus*          12)
+(defconst *op-plus-plus-one* 13)
+(defconst *op-plus-not*      14)
+(defconst *op-minus*         15)
+(defconst *op-bitand*        0)
+(defconst *op-bitxor*        2)
+(defconst *op-bitor*         4)
+
 ; test it - only for us- REMOVE THIS
 ; a+1
 (stv-run (test-vector3)
-         '((a . 9)
+         `((a . 9)
            (b . 5)
-           (op . 9)))
+           (op . ,*op-plus-one*)))
 ; a+b
 (stv-run (test-vector3)
-         '((a . 9)
+         `((a . 9)
            (b . 5)
-           (op . 12)))
+           (op . ,*op-plus*)))
 
 
 ; EXERCISE 5
@@ -89,3 +100,58 @@
   :g-bindings (gl::auto-bindings (:nat a 8)
                                  (:nat b 8)
                                  (:nat op 4)))
+
+
+; macros
+
+(defmacro alu8-basic-result ()
+  `(let* ((in-alist  (test-vector3-autoins))
+         (out-alist (stv-run (test-vector3) in-alist))
+         (res       (cdr (assoc 'res out-alist))))
+    res))
+
+(defmacro alu8-default-bindings ()
+  `(gl::auto-bindings (:nat a 8)
+                      (:nat b 8)
+                      (:nat op 4)))
+
+(defmacro alu8-thm (name &key opcode spec (g-bindings
+                                           '(alu8-default-bindings)))
+  `(def-gl-thm ,name
+     :hyp (and (test-vector3-autohyps)
+               (equal op ,opcode))
+     :concl (equal (alu8-basic-result) ,spec)
+     :g-bindings ,g-bindings))
+
+; EXERCISE 7
+(alu8-thm another-proof-a
+          :opcode *op-a*
+          :spec a)
+
+(alu8-thm proof-plus-one
+          :opcode *op-plus-one*
+          :spec (mod (+ a 1) (expt 2 8)))
+
+(alu8-thm proof-minus-one
+          :opcode *op-minus-one*
+          :spec (mod (- a 1) (expt 2 8)))
+
+(alu8-thm another-proof-plus
+          :opcode *op-plus*
+          :spec (mod (+ a b) (expt 2 8)))
+
+(alu8-thm another-proof-a
+          :opcode *op-a*
+          :spec a)
+
+(alu8-thm another-proof-a
+          :opcode *op-a*
+          :spec a)
+
+(alu8-thm another-proof-a
+          :opcode *op-a*
+          :spec a)
+
+(alu8-thm another-proof-a
+          :opcode *op-a*
+          :spec a)
