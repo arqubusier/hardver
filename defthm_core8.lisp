@@ -98,7 +98,7 @@
 (defmacro ex8-basic-result ()
   `(let* ((in-alist  (test-vector-ex8-autoins))
          (out-alist (stv-run (test-vector-ex8) in-alist))
-         (res       (out-alist))
+         (res       (assoc 'res out-alist)))
      res))
 
 
@@ -112,23 +112,45 @@
      :g-bindings ,g-bindings))
 
 ; proove ADC
-(defmacro adc-spec (ain bin flg regs)
+(defmacro adc-spec (ain bin flg reg_r)
  `(res (AOUT ,ain)
        (BOUT,bin)
- (OP_ALU , (logapp 1 flg #b110))
- (CLRF , 15)
- (IRIE1 ,1)
- (IRIE2 ,0)
- (RAOE1 ,0)
- (RAOE2 ,1)
- (RBOE1 ,0)
- (RBOE2 ,1)
- (SEL1 ,0)
- (SEL2 ,1)
- (SIE1 ,0)
- (SIE2 ,1)
- (RB , regs)))
+       (OP_ALU (logapp 1 (logbit 3 ,flg) #b110))
+       (CLRF . 15)
+       (IRIE1 . #b1)
+       (IRIE2 . #b0)
+       (RAOE1 . #b0)
+       (RAOE2 . #b1)
+       (RBOE1 . #b0)
+       (RBOE2 . #b1)
+       (SEL1 . #b0)
+       (SEL2 . #b1)
+       (SIE1 . #b0)
+       (SIE2 . #b1)
+       (RB ,reg_r)))
+
+(defun adc-spec (ain bin flg reg_r)
+ `((AOUT . ,ain)
+       (BOUT . ,bin)
+       (OP_ALU . (logapp 1 (logbit 3 ,flg) #b110))
+       (CLRF . 15)
+       (IRIE1 . #b1)
+       (IRIE2 . #b0)
+       (RAOE1 . #b0)
+       (RAOE2 . #b1)
+       (RBOE1 . #b0)
+       (RBOE2 . #b1)
+       (SEL1 . #b0)
+       (SEL2 . #b1)
+       (SIE1 . #b0)
+       (SIE2 . #b1)
+       (RB . ,reg_r)))
+
 
 (ex8-thm proof-adc
-         :opcode . #b00011100
-         :spec 
+         :opcode_in #b00011100
+         :spec (adc-spec ain bin flg reg_r))
+
+(defun aaa (bin)
+  `((AOUT . 34)
+    (BOUT . ,bin)))
