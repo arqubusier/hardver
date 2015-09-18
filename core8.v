@@ -1,7 +1,7 @@
 // Small design of an 8 bit core processor
 // Template solution to be given to students
 
-`include "assn1.v"
+`include "alu8.v"
 
 `define ADC  4'b0001
 `define ADD  4'b0000
@@ -77,17 +77,6 @@ ex8 ex (.clk (clk), .rst(rst), .ir(IRout),
 
 endmodule // END CORE8
 
-
-
-
-
-
-
-
-
-
-
-
 //----------------- SREG4 ----------------------------------------
 // module to store, clear, and set the four flags.
 module sreg4 (clk,rst,ie,in,clr,flags); 
@@ -144,45 +133,36 @@ always @(posedge clk)
 
 // Decoding the instruction
 
+// set the control flags
 assign irie = (xst == 2'b00) ? 1'b1 : 1'b0;
+
+// LDI - flags are not affected
 assign sie = (ir[15:12] == `LDI) ? 1'b0 : ((xst == 2'b00) ? 1'b0 : 1'b1);
 assign sel =  (xst == 2'b00) ? 1'b0 : 1'b1;
-assign raoe = (xst == 2'b00) ? 1'b0 : 1'b1;
+
+// LDI - no register is used for input value
+assign raoe = (ir[15:12] == `LDI) ? 1'b0 : ((xst == 2'b00) ? 1'b0 : 1'b1);
+
+// ANDI and LDI - register b is not used
 assign rboe = ir[14] ? 1'b0 : ((xst == 2'b00) ? 1'b0 : 1'b1);
 
-assign abus = abusin;
+assign abus = (ir[15:12] == `LDI) ? {ir[11:8], ir[3:0]} : abusin;
 
 assign rb = ir[3:0];
-assign bbus = ir[14] ? {ir[11:8], ir[3:0]} : bbusin;
+assign bbus = (ir[15:12] == `ANDI) ? {ir[11:8], ir[3:0]} : bbusin;
 
 assign alu = 
     (ir[15:12] == `ADC) ? (flg[`C_FLG] ? 4'b1101 : 4'b1100) 
 	: (ir[15:12] == `ADD) ? 4'b1100 
 	: (ir[15:12] == `AND) ? 4'b0000 
 	: (ir[15:12] == `ANDI) ? 4'b0000 
-	: c ? 4'b1000 
+	: (ir[15:12] == `LDI) ? 4'b1000 
 	: 4'bx;
 
 assign clrf = (ir[15:12] == `AND) ? 4'b1101
 	:(ir[15:12] == `ANDI) ? 4'b1101
 	:4'b1111;
 
-
-
-// alu
-// ALU8
-// computes the following operations
-// op = kijcin
-// 4'b1000              a
-// 4'b1001              a+1
-// 4'b1010              a-1
-// 4'b1100              a+b
-// 4'b1101              a+b+1
-// 4'b1110              a+!b
-// 4'b1111              a-b
-// 4'b0000              a & b
-// 4'b0010              a ^ b
-// 4'b0100              a | b
 
 endmodule
 //--------------------------------------------------

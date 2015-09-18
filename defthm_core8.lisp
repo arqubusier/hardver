@@ -95,22 +95,22 @@
   )
 
 ;ADC test
-(stv-run (test-vector-ex8)
-           `((opcode   . #b00011100)
-             (reg_r . #b0010)
-             (reg_d . #b0011)
-             (ain  . 9)
-             (bin  . 3)
-             (flg  . #b1000)))
-
-
-(stv-debug (test-vector-ex8)
-           `((opcode   . #b00011100)
-             (reg_r . #b0000)
-             (reg_d . #b0000)
-             (ain  . 0)
-             (bin  . 0)
-             (flg  . #b0000)))
+;(stv-run (test-vector-ex8)
+;           `((opcode   . #b00011100)
+;             (reg_r . #b0010)
+;             (reg_d . #b0011)
+;             (ain  . 9)
+;             (bin  . 3)
+;             (flg  . #b1000)))
+;
+;
+;(stv-debug (test-vector-ex8)
+;           `((opcode   . #b00011100)
+;             (reg_r . #b0000)
+;             (reg_d . #b0000)
+;             (ain  . 0)
+;             (bin  . 0)
+;             (flg  . #b0000)))
 
 ;macro
 
@@ -130,17 +130,6 @@
                (equal opcode ,opcode_in))
      :concl (equal (ex8-basic-result) ,spec)
      :g-bindings ,g-bindings))
-
-;(defmacro ex8-thm (name &key opcode_in spec (g-bindings
-;                                           '(test-vector-ex8-autobinds)))
-;  `(def-gl-thm ,name
-;     :hyp (and (test-vector-ex8-autohyps)
-;               (equal opcode ,opcode_in))
-;     :concl (b* ((impl (ex8-basic-result))
-;                 (spec ,spec))
-;                (cw "Spec: ~s0~%" (str::hexify (cdr (assoc 'OP_ALU spec))))
-;                (equal impl spec))
-;     :g-bindings ,g-bindings))
 
 
 
@@ -268,9 +257,9 @@
 
 ;; proove ANDI
 ;; ANDI SPECIFICATION
-(defun and-spec (ain val_k0 val_k1)
+(defun andi-spec (ain val_k0 val_k1)
  `((AOUT . ,ain)
-       (BOUT . ,(logapp 4 val_k0 val_k1)
+       (BOUT . ,(logapp 4 val_k0 val_k1))
        (OP_ALU . #b0000)
        (CLRF . #b1101)
        (IRIE1 . #b1)
@@ -282,28 +271,30 @@
        (SEL1 . #b0)
        (SEL2 . #b1)
        (SIE1 . #b0)
-       (SIE2 . #b1)
-       (RB . #b0)))
+       (SIE2 . #b1)))
 
+(ex8-thm-2 proof-andi
+         :opcode_in #b0111
+         :spec (andi-spec ain val_k0 val_k1))
+ 
 ;; LDI SPECIFICATION
-(defun ldi-spec (ain val_k0 val_k1)
- `((AOUT . ,ain)
-       (BOUT . ,(logapp 4 val_k0 val_k1)
+(defun ldi-spec (bin val_k0 val_k1)
+ `((AOUT . ,(logapp 4 val_k0 val_k1))
+       (BOUT . ,bin)
        (OP_ALU . #b1000)
        (CLRF . #b1111)
        (IRIE1 . #b1)
        (IRIE2 . #b0)
        (RAOE1 . #b0)
-       (RAOE2 . #b1)
+       (RAOE2 . #b0)
        (RBOE1 . #b0)
        (RBOE2 . #b0)
        (SEL1 . #b0)
        (SEL2 . #b1)
        (SIE1 . #b0)
-       (SIE2 . #b0)
-       (RB . #b0)))
+       (SIE2 . #b0)))
 
 
-(ex8-thm proof-and
-         :opcode_in #b00100000
-         :spec (and-spec ain bin reg_r))
+(ex8-thm-2 proof-ldi
+         :opcode_in #b1110
+         :spec (ldi-spec bin val_k0 val_k1))
