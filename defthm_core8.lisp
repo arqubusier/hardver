@@ -217,16 +217,6 @@
          :opcode_in #b00100000
          :spec (and-spec ain bin reg_r))
 
-
-
-
-
-
-
-
-
-
-
 ;; STV for the opertions where the second value is in the register instruction code
 ; Symbolic Test Vector for ex8 module
 (defstv test-vector-ex8-2
@@ -277,9 +267,10 @@
      :g-bindings ,g-bindings))
 
 ;; proove ANDI
-(defun and-spec (ain bin reg_r)
+;; ANDI SPECIFICATION
+(defun and-spec (ain val_k0 val_k1)
  `((AOUT . ,ain)
-       (BOUT . ,bin)
+       (BOUT . ,(logapp 4 val_k0 val_k1)
        (OP_ALU . #b0000)
        (CLRF . #b1101)
        (IRIE1 . #b1)
@@ -287,13 +278,30 @@
        (RAOE1 . #b0)
        (RAOE2 . #b1)
        (RBOE1 . #b0)
-       (RBOE2 . #b1)
+       (RBOE2 . #b0)
        (SEL1 . #b0)
        (SEL2 . #b1)
        (SIE1 . #b0)
        (SIE2 . #b1)
-       (RB . ,reg_r)))
+       (RB . #b0)))
 
+;; LDI SPECIFICATION
+(defun ldi-spec (ain val_k0 val_k1)
+ `((AOUT . ,ain)
+       (BOUT . ,(logapp 4 val_k0 val_k1)
+       (OP_ALU . #b1000)
+       (CLRF . #b1111)
+       (IRIE1 . #b1)
+       (IRIE2 . #b0)
+       (RAOE1 . #b0)
+       (RAOE2 . #b1)
+       (RBOE1 . #b0)
+       (RBOE2 . #b0)
+       (SEL1 . #b0)
+       (SEL2 . #b1)
+       (SIE1 . #b0)
+       (SIE2 . #b0)
+       (RB . #b0)))
 
 
 (ex8-thm proof-and
