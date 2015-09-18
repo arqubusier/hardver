@@ -156,9 +156,16 @@ assign rb = ir[3:0];
 assign bbus = ir[14] ? {ir[11:8], ir[3:0]} : bbusin;
 
 assign alu = 
-    (ir[15:12] == `ADC) ? (flg[`C_FLG] ? 4'b1101 : 4'b1100) : 4'bx;
+    (ir[15:12] == `ADC) ? (flg[`C_FLG] ? 4'b1101 : 4'b1100) 
+	: (ir[15:12] == `ADD) ? 4'b1100 
+	: (ir[15:12] == `AND) ? 4'b0000 
+	: (ir[15:12] == `ANDI) ? 4'b0000 
+	: (ir[15:12] == `LDI) ? 4'b1000 
+	: 4'bx;
 
-assign clrf = 4'b1111;
+assign clrf = (ir[15:12] == `AND) ? 4'b1101
+	:(ir[15:12] == `ANDI) ? 4'b1101
+	:4'b1111;
 
 
 

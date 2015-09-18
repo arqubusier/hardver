@@ -134,8 +134,9 @@
 ;                (equal impl spec))
 ;     :g-bindings ,g-bindings))
 
-; proove ADC
 
+
+;; proove ADC
 (defun adc-spec (ain bin flg reg_r)
  `((AOUT . ,ain)
        (BOUT . ,bin)
@@ -159,3 +160,26 @@
          :opcode_in #b00011100
          :spec (adc-spec ain bin flg reg_r))
 
+;; proove ADD
+(defun add-spec (ain bin reg_r)
+ `((AOUT . ,ain)
+       (BOUT . ,bin)
+       (OP_ALU . #b1100)
+       (CLRF . 15)
+       (IRIE1 . #b1)
+       (IRIE2 . #b0)
+       (RAOE1 . #b0)
+       (RAOE2 . #b1)
+       (RBOE1 . #b0)
+       (RBOE2 . #b1)
+       (SEL1 . #b0)
+       (SEL2 . #b1)
+       (SIE1 . #b0)
+       (SIE2 . #b1)
+       (RB . ,reg_r)))
+
+
+
+(ex8-thm proof-add
+         :opcode_in #b00001100
+         :spec (add-spec ain bin reg_r))
