@@ -94,11 +94,23 @@
              (ain  . 9)
              (bin  . 3)
              (flg  . #b1000)))
+
+
+(stv-debug (test-vector-ex8)
+           `((opcode   . #b00011100)
+             (reg_r . #b0000)
+             (reg_d . #b0000)
+             (ain  . 0)
+             (bin  . 0)
+             (flg  . #b0000)))
+
 ;macro
+
+
 (defmacro ex8-basic-result ()
   `(let* ((in-alist  (test-vector-ex8-autoins))
          (out-alist (stv-run (test-vector-ex8) in-alist))
-         (res       (assoc 'res out-alist)))
+         (res       out-alist))
      res))
 
 
@@ -111,28 +123,23 @@
      :concl (equal (ex8-basic-result) ,spec)
      :g-bindings ,g-bindings))
 
+;(defmacro ex8-thm (name &key opcode_in spec (g-bindings
+;                                           '(test-vector-ex8-autobinds)))
+;  `(def-gl-thm ,name
+;     :hyp (and (test-vector-ex8-autohyps)
+;               (equal opcode ,opcode_in))
+;     :concl (b* ((impl (ex8-basic-result))
+;                 (spec ,spec))
+;                (cw "Spec: ~s0~%" (str::hexify (cdr (assoc 'OP_ALU spec))))
+;                (equal impl spec))
+;     :g-bindings ,g-bindings))
+
 ; proove ADC
-(defmacro adc-spec (ain bin flg reg_r)
- `(res (AOUT ,ain)
-       (BOUT,bin)
-       (OP_ALU (logapp 1 (logbit 3 ,flg) #b110))
-       (CLRF . 15)
-       (IRIE1 . #b1)
-       (IRIE2 . #b0)
-       (RAOE1 . #b0)
-       (RAOE2 . #b1)
-       (RBOE1 . #b0)
-       (RBOE2 . #b1)
-       (SEL1 . #b0)
-       (SEL2 . #b1)
-       (SIE1 . #b0)
-       (SIE2 . #b1)
-       (RB ,reg_r)))
 
 (defun adc-spec (ain bin flg reg_r)
  `((AOUT . ,ain)
        (BOUT . ,bin)
-       (OP_ALU . (logapp 1 (logbit 3 ,flg) #b110))
+       (OP_ALU . ,(logapp 1 (logbit 3 flg) #b110))
        (CLRF . 15)
        (IRIE1 . #b1)
        (IRIE2 . #b0)
@@ -147,10 +154,8 @@
        (RB . ,reg_r)))
 
 
+
 (ex8-thm proof-adc
          :opcode_in #b00011100
          :spec (adc-spec ain bin flg reg_r))
 
-(defun aaa (bin)
-  `((AOUT . 34)
-    (BOUT . ,bin)))

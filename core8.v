@@ -8,6 +8,10 @@
 `define AND  4'b0010
 `define ANDI 4'b0111
 `define LDI  4'b1110
+`define C_FLG 3
+`define Z_FLG 2
+`define V_FLG 1
+`define N_FLG 0
 
 module core8 (clk,rst,inst);
 input clk;
@@ -152,7 +156,7 @@ assign rb = ir[3:0];
 assign bbus = ir[14] ? {ir[11:8], ir[3:0]} : bbusin;
 
 assign alu = 
-    (ir[15:12] == `ADC) ? (flg[0] ? 4'b1100 : 4'b1101) : 4'bx;
+    (ir[15:12] == `ADC) ? (flg[`C_FLG] ? 4'b1101 : 4'b1100) : 4'bx;
 
 assign clrf = 4'b1111;
 
