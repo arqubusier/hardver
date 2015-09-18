@@ -145,10 +145,10 @@ always @(posedge clk)
 // Decoding the instruction
 
 assign irie = (xst == 2'b00) ? 1'b1 : 1'b0;
-assign sie =  (xst == 2'b00) ? 1'b0 : 1'b1;
+assign sie = (ir[15:12] == `LDI) ? 1'b0 : ((xst == 2'b00) ? 1'b0 : 1'b1);
 assign sel =  (xst == 2'b00) ? 1'b0 : 1'b1;
 assign raoe = (xst == 2'b00) ? 1'b0 : 1'b1;
-assign rboe = (xst == 2'b00) ? 1'b0 : 1'b1;
+assign rboe = ir[14] ? 1'b0 : ((xst == 2'b00) ? 1'b0 : 1'b1);
 
 assign abus = abusin;
 
@@ -160,7 +160,7 @@ assign alu =
 	: (ir[15:12] == `ADD) ? 4'b1100 
 	: (ir[15:12] == `AND) ? 4'b0000 
 	: (ir[15:12] == `ANDI) ? 4'b0000 
-	: (ir[15:12] == `LDI) ? 4'b1000 
+	: c ? 4'b1000 
 	: 4'bx;
 
 assign clrf = (ir[15:12] == `AND) ? 4'b1101

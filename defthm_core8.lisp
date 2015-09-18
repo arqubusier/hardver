@@ -57,6 +57,14 @@
 (defconst *ex8*
   (vl2014::vl-module->esim *ex8-vl*))
 
+
+
+
+
+
+
+
+;; STV for the opertions where the second value is in the register Rr
 ; Symbolic Test Vector for ex8 module
 (defstv test-vector-ex8
   :mod *ex8*
@@ -183,3 +191,111 @@
 (ex8-thm proof-add
          :opcode_in #b00001100
          :spec (add-spec ain bin reg_r))
+
+
+;; proove AND
+(defun and-spec (ain bin reg_r)
+ `((AOUT . ,ain)
+       (BOUT . ,bin)
+       (OP_ALU . #b0000)
+       (CLRF . #b1101)
+       (IRIE1 . #b1)
+       (IRIE2 . #b0)
+       (RAOE1 . #b0)
+       (RAOE2 . #b1)
+       (RBOE1 . #b0)
+       (RBOE2 . #b1)
+       (SEL1 . #b0)
+       (SEL2 . #b1)
+       (SIE1 . #b0)
+       (SIE2 . #b1)
+       (RB . ,reg_r)))
+
+
+
+(ex8-thm proof-and
+         :opcode_in #b00100000
+         :spec (and-spec ain bin reg_r))
+
+
+
+
+
+
+
+
+
+
+
+;; STV for the opertions where the second value is in the register instruction code
+; Symbolic Test Vector for ex8 module
+(defstv test-vector-ex8-2
+  :mod *ex8*
+
+  ;; phases:  0     1     2    3
+  
+  :inputs
+  '(("clk"    0     ~ )
+    ("rst"    1     1     0)
+    ("ir[3:0]" val_k0)
+    ("ir[7:4]" reg_d)
+    ("ir[11:8]" val_k1)
+    ("ir[15:12]" opcode)
+    ("abusin" ain)
+    ("bbusin" bin)
+    ("flg"    flg))
+
+  :outputs
+  '(("abus"   _     _     _     aout)
+    ("bbus"   _     _     _     bout)
+    ("alu"    _     _     _     op_alu)
+    ("clrf"   _     _     _     clrf)
+    ("irie"   _     irie1 _     irie2)
+    ("raoe"   _     raoe1 _     raoe2)
+    ("rboe"   _     rboe1 _     rboe2)
+    ("sel"    _     sel1  _     sel2)
+    ("sie"    _     sie1  _     sie2)
+    ("rb"     _ ))
+  )
+
+
+;macro
+(defmacro ex8-basic-result-2 ()
+  `(let* ((in-alist  (test-vector-ex8-2-autoins))
+         (out-alist (stv-run (test-vector-ex8-2) in-alist))
+         (res       out-alist))
+     res))
+
+
+
+(defmacro ex8-thm-2 (name &key opcode_in spec (g-bindings
+                                           '(test-vector-ex8-2-autobinds)))
+  `(def-gl-thm ,name
+     :hyp (and (test-vector-ex8-2-autohyps)
+               (equal opcode ,opcode_in))
+     :concl (equal (ex8-basic-result-2) ,spec)
+     :g-bindings ,g-bindings))
+
+;; proove ANDI
+(defun and-spec (ain bin reg_r)
+ `((AOUT . ,ain)
+       (BOUT . ,bin)
+       (OP_ALU . #b0000)
+       (CLRF . #b1101)
+       (IRIE1 . #b1)
+       (IRIE2 . #b0)
+       (RAOE1 . #b0)
+       (RAOE2 . #b1)
+       (RBOE1 . #b0)
+       (RBOE2 . #b1)
+       (SEL1 . #b0)
+       (SEL2 . #b1)
+       (SIE1 . #b0)
+       (SIE2 . #b1)
+       (RB . ,reg_r)))
+
+
+
+(ex8-thm proof-and
+         :opcode_in #b00100000
+         :spec (and-spec ain bin reg_r))
